@@ -1,7 +1,5 @@
 package net.orby.ConnectedTextureMaker;
 
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
@@ -54,9 +52,17 @@ public class Main {
         if (args1.contains("-debug"))
             debug = true;
 
+        String psep = "\\";
+
+        if (args1.contains("-psep"))
+            psep = args1.get(args1.indexOf("-psep")+1);
+
+        if (args1.contains("-coverlay"))
+            loadCornerOverlay(args1.get(args1.indexOf("-coverlay")+1));
+
         loadImages(args[0], args[1]);
         borderSize = Float.parseFloat(args[2]);
-        export(args[3], args[4], "\\");
+        export(args[3], args[4], psep);
 
 //        frame = new JFrame("Connected texture maker");
 //        frame.setPreferredSize(new Dimension(500, 500));
