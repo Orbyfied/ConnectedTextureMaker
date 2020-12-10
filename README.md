@@ -22,3 +22,7 @@ and type `gentextures` in it, there you will see how the arguments work.
     `<textureName>` = The name of the texture. Used for the actual output folder and the `.properties` file.
     `[-coverlay <image>]` = Enables the corners of the texture to have a different overlay than the borders.  
     `[-blockid <id>]` = Automatically puts the block ID in the `.properties` file.
+
+## Me
+***YouTube***: https://www.youtube.com/channel/UC341yIu-j9Fs9iS5F3-OeYg?view_as=subscriber
+Thats kind of it...
