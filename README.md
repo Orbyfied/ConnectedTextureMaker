@@ -24,7 +24,7 @@ and type `gentextures` in it, there you will see how the arguments work.
     `[-blockid <id>]` = Automatically puts the block ID in the `.properties` file.
   - Basic Internal Workings  
     `Border size in pixels` : Element Size * (Resolution / 16) * Border Size  
-    `Actual output directory` : OutputFolder / TextureName  
+    `Actual output directory` : OutputFolder/TextureName  
     `Dependencies required` : JDK 13+  
 
 ## Me
