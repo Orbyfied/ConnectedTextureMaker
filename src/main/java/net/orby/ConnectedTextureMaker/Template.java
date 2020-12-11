@@ -200,13 +200,13 @@ public class Template {
         Integer[] ints = integers.clone();
         switch (element){
             case "l":
-		        ints[3] = 16*res;
-		        break;
+		ints[3] = 16*res;
+		break;
             case "r":
                 ints[3] = -16*res;
                 break;
             case "t":
-		        ints[2] = 16*res;
+		ints[2] = 16*res;
                 break;
             case "b":
                 ints[2] = -16*res;
