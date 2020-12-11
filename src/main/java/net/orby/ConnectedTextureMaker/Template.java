@@ -198,6 +198,7 @@ public class Template {
 
     public static Integer[] processRect(Integer[] integers, String element, float stretchx, float stretchy, int res){
         Integer[] ints = integers.clone();
+	res = res/16;
         switch (element){
             case "l":
 		ints[3] = 16*res;
