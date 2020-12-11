@@ -1,2 +1,2 @@
 path=$(cat javapath.txt)
-$path -jar ConnectedTextureMaker.jar %* -psep /
+$path -jar ConnectedTextureMaker.jar $@ -psep /
