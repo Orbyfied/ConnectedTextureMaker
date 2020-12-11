@@ -19,13 +19,13 @@ and type `gentextures` in it, there you will see how the arguments work.
     `<borderImageFile>` = The path to the border image file that will overlay the source image on the border/corner parts.  
     `<borderSize>` = The multiplier for the default size, one element in the equation for the border size. (See the next part)  
     `<outputFolder>` = The path to the output folder; Actual output folder: (`<outputF>/<textureN>/`) (`/` = current folder)  
-    `<textureName>` = The name of the texture. Used for the actual output folder and the `.properties` file.
-    `[-coverlay <image>]` = Enables the corners of the texture to have a different overlay than the borders.  
+    `<textureName>` = The name of the texture. Used for the actual output folder and the `.properties` file.  
+    `[-coverlay <image>]` = Enables the corners of the texture to have a different overlay than the borders.    
     `[-blockid <id>]` = Automatically puts the block ID in the `.properties` file.
-  - Basic Internal Workings
-    `Border size in pixels` : Element Size * (Resolution / 16) * Border Size
-    `Actual output directory` : OutputFolder / TextureName
-    `Dependencies required` : JDK 13+
+  - Basic Internal Workings  
+    `Border size in pixels` : Element Size * (Resolution / 16) * Border Size  
+    `Actual output directory` : OutputFolder / TextureName  
+    `Dependencies required` : JDK 13+  
 
 ## Me
 ***YouTube***: https://www.youtube.com/channel/UC341yIu-j9Fs9iS5F3-OeYg?view_as=subscriber
