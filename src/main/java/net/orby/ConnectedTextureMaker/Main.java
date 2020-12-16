@@ -238,7 +238,7 @@ public class Main {
 
             FileOutputStream fos = new FileOutputStream(file);
             String blockId0 = "<id>";
-            if (blockId0 != null){
+            if (blockId != null){
                 blockId0 = Integer.toString(blockId);
             }
             fos.write(("matchBlocks=<id>\nmethod=ctm\ntiles=0-46").replace("<id>", blockId0)
