@@ -24,9 +24,11 @@ public class Main {
     public static BufferedImage borderOverlay;
     public static BufferedImage sourceImage;
     public static BufferedImage cornerOverlay;
+    public static int borderPixelSize = -1;
     public static float borderSize = 1;
     public static int blockId = 0;
     public static boolean debug = false;
+    public static boolean testBorderPixels = false;
 
     public static void main(String[] args) throws IOException {
 
@@ -52,6 +54,12 @@ public class Main {
         if (args1.contains("-debug"))
             debug = true;
 
+        if (args1.contains("-pixsize"))
+            borderPixelSize = Integer.parseInt(args[args1.indexOf("-pixsize")+1]);
+
+        if (args1.contains("-testsize"))
+            testBorderPixels = true;
+
         String psep = "\\";
 
         if (args1.contains("-psep"))
@@ -67,6 +75,69 @@ public class Main {
 //        frame = new JFrame("Connected texture maker");
 //        frame.setPreferredSize(new Dimension(500, 500));
 //        panel = new JPanel();
+    }
+
+    public static int testBorderSizeM(int res){
+        int size = 0;
+        int[] avm = new int[4];
+
+        int x = 0;
+        int y = 0;
+        boolean end;
+
+        // Test Left
+        y = res/2;
+        end = false;
+        while (!end){
+            x++;
+            if (new Color(borderOverlay.getRGB(x, y), true).getAlpha() == 0)
+                end = true;
+        }
+        avm[0] = x;
+
+        // Test Right
+        y = res/2;
+        x = res;
+        end = false;
+        while (!end){
+            x--;
+            if (new Color(borderOverlay.getRGB(x, y), true).getAlpha() == 0)
+                end = true;
+        }
+        avm[1] = res - x;
+
+        // Test Top
+        y = 0;
+        x = res/2;
+        end = false;
+        while (!end){
+            y++;
+            if (new Color(borderOverlay.getRGB(x, y), true).getAlpha() == 0)
+                end = true;
+        }
+        avm[2] = y;
+
+        // Test Bottom
+        y = res;
+        x = res/2;
+        end = false;
+        while (!end){
+            y--;
+            if (new Color(borderOverlay.getRGB(x, y), true).getAlpha() == 0)
+                end = true;
+        }
+        avm[3] = res - y;
+
+        // Get Average and return
+        System.out.println(avm[0]);
+        for (int a : avm)
+            size += a;
+        size = (int) Math.floor(size / 4f);
+        return size;
+    }
+
+    public static float fromPixelAmt(int pix, int resolution){
+        return pix / (resolution / 16f);
     }
 
     public static void loadImages(String srcPath, String ovrPath){
@@ -117,6 +188,12 @@ public class Main {
             if (cornerOverlay.getWidth() != sr)
                 throw new IllegalArgumentException("corner overlay image must have the same resolution as " +
                         "the source image.");
+
+        if (testBorderPixels)
+            borderSize = fromPixelAmt(testBorderSizeM(sr), sr) + borderSize;
+
+        if (borderPixelSize != -1)
+            borderSize = fromPixelAmt(borderPixelSize, sr) + borderSize;
 
         // replace <id> with the connection design id
         String filePathFormat = fpath + "/" + textureName + "/<id>.png";
@@ -238,7 +315,7 @@ public class Main {
 
             FileOutputStream fos = new FileOutputStream(file);
             String blockId0 = "<id>";
-            if (blockId != null){
+            if (blockId0 != null){
                 blockId0 = Integer.toString(blockId);
             }
             fos.write(("matchBlocks=<id>\nmethod=ctm\ntiles=0-46").replace("<id>", blockId0)
