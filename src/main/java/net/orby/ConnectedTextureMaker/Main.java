@@ -1,6 +1,7 @@
 package net.orby.ConnectedTextureMaker;
 
 import javax.imageio.ImageIO;
+import javax.management.timer.TimerMBean;
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import java.awt.*;
@@ -24,11 +25,16 @@ public class Main {
     public static BufferedImage borderOverlay;
     public static BufferedImage sourceImage;
     public static BufferedImage cornerOverlay;
+    public static Graphics2D borderOverlayGraphics;
+    public static Graphics2D sourceImageGraphics;
+    public static BufferedImage cornerOverlayGraphics;
     public static int borderPixelSize = -1;
     public static float borderSize = 1;
     public static int blockId = 0;
     public static boolean debug = false;
     public static boolean testBorderPixels = false;
+    public static boolean mirrorBorder = false;
+    public static int borderSizePixel;
 
     public static void main(String[] args) throws IOException {
 
@@ -59,6 +65,9 @@ public class Main {
 
         if (args1.contains("-testsize"))
             testBorderPixels = true;
+
+        if (args1.contains("-mirrorborder"))
+            mirrorBorder = true;
 
         String psep = "\\";
 
@@ -129,7 +138,6 @@ public class Main {
         avm[3] = res - y;
 
         // Get Average and return
-        System.out.println(avm[0]);
         for (int a : avm)
             size += a;
         size = (int) Math.floor(size / 4f);
@@ -147,10 +155,86 @@ public class Main {
         try {
               sourceImage = ImageIO.read(si);
               borderOverlay = ImageIO.read(oi);
+
+              borderOverlayGraphics = borderOverlay.createGraphics();
+              sourceImageGraphics = sourceImage.createGraphics();
         } catch (IOException e){
             e.printStackTrace();
             throw new IllegalStateException("failed to load files: IOException", e);
         }
+    }
+
+    public static void mirrorBorderImage() {
+        int w = sourceImage.getWidth();
+        int h = sourceImage.getHeight();
+
+        BufferedImage mirror = new BufferedImage(w/2, h/2, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D mg = mirror.createGraphics();
+        mg.drawImage(borderOverlay, 0, 0, null);
+        mg.dispose();
+
+        for (int x = 0; x <= borderSizePixel; x++){
+            for (int y = 0; y < h/2; y++){
+                int y1 = y;
+                if (y <= borderSizePixel)
+                    y1 = y+x;
+                mirror.setRGB(y1,x,mirror.getRGB(x, y1));
+            }
+        }
+
+        borderOverlayGraphics.drawImage(mirror, 0, 0, null);
+        borderOverlayGraphics.drawImage(rotate(flipH(mirror), 0), w/2, 0, null);
+        borderOverlayGraphics.drawImage(rotate(mirror, 180), w/2, h/2, null);
+        borderOverlayGraphics.drawImage(rotate(flipV(mirror), 0), 0, h/2, null);
+        borderOverlayGraphics.dispose();
+
+        try {
+            ImageIO.write(borderOverlay, "PNG", new File("debug.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static BufferedImage rotate(BufferedImage image, float degrees)
+    {
+        AffineTransform at = AffineTransform.getRotateInstance(
+                Math.toRadians(degrees),
+                image.getWidth()/2.0,
+                image.getHeight()/2.0);
+        return createTransformed(image, at);
+    }
+
+    public static BufferedImage flipHV(BufferedImage image){
+        return flipH(flipV(image));
+    }
+
+    private static BufferedImage flipH(BufferedImage image)
+    {
+        AffineTransform at = new AffineTransform();
+        at.concatenate(AffineTransform.getScaleInstance(-1, 1));
+        at.concatenate(AffineTransform.getTranslateInstance(-image.getWidth(), 0));
+        return createTransformed(image, at);
+    }
+
+    private static BufferedImage flipV(BufferedImage image)
+    {
+        AffineTransform at = new AffineTransform();
+        at.concatenate(AffineTransform.getScaleInstance(1, -1));
+        at.concatenate(AffineTransform.getTranslateInstance(0, -image.getHeight()));
+        return createTransformed(image, at);
+    }
+
+    private static BufferedImage createTransformed(BufferedImage image, AffineTransform at)
+    {
+        BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = newImage.createGraphics();
+
+        g.transform(at);
+        g.drawImage(image, 0, 0, null);
+
+        g.dispose();
+        return newImage;
     }
 
     public static void loadCornerOverlay(String path){
@@ -195,6 +279,11 @@ public class Main {
         if (borderPixelSize != -1)
             borderSize = fromPixelAmt(borderPixelSize, sr) + borderSize;
 
+        borderSizePixel = (int) (borderSize * sr / 16);
+
+        if (mirrorBorder)
+            mirrorBorderImage();
+
         // replace <id> with the connection design id
         String filePathFormat = fpath + "/" + textureName + "/<id>.png";
         if (filePathFormat.startsWith("/"))
@@ -238,7 +327,7 @@ public class Main {
             List<Integer[]> elements = Template.createMask(Template.parseCoords(elementsStr), sr,
                     borderSize, borderSize);
 
-            BufferedImage concat = new BufferedImage(sr, sr, BufferedImage.TYPE_INT_RGB);
+            BufferedImage concat = new BufferedImage(sr, sr, BufferedImage.TYPE_INT_ARGB);
             concat.createGraphics();
 
             Graphics2D g = (Graphics2D) concat.getGraphics();
