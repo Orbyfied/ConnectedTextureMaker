@@ -4,8 +4,11 @@ import javax.imageio.ImageIO;
 import javax.management.timer.TimerMBean;
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
+import javax.swing.plaf.SplitPaneUI;
 import java.awt.*;
 import java.awt.desktop.SystemSleepEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -13,14 +16,12 @@ import java.io.*;
 import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-
-    public static JFrame frame;
-    public static JPanel panel;
 
     public static BufferedImage borderOverlay;
     public static BufferedImage sourceImage;
@@ -35,15 +36,25 @@ public class Main {
     public static boolean testBorderPixels = false;
     public static boolean mirrorBorder = false;
     public static int borderSizePixel;
+    public static float borderSizeMultiplier = 1;
+
+    public static JFrame frame;
+    public static JPanel panel;
+    public static JPanel buttonPanel;
+    public static JPanel exportConfig;
+    public static JPanel basicInputs;
+    public static JPanel extraConfig1;
+    public static JPanel extraConfig2;
+    public static JPanel extraConfig3;
 
     public static void main(String[] args) throws IOException {
 
         List<String> args1 = Arrays.asList(args);
 
         System.out.println("Connected Texture Maker - By Orbyfied");
-        System.out.println("- GUI coming soon (maybe)");
+        System.out.println("- GUI getting more updates soon.");
 
-        if (args.length < 3){
+        if (args.length < 3 && args.length != 0){
             System.out.println("[error] please provide parameters: gentextures <source> <borderoverlay> " +
                     "<bordersize> <outputpath> <texturename> [-coverlay <img>] [-blockid <id>]");
             System.out.println("[help] example: \"gentextures diamond_block.png blue_square.png " +
@@ -51,8 +62,17 @@ public class Main {
             return;
         }
 
-        if (args1.contains("-coverlay"))
-            loadCornerOverlay(args1.get(args1.indexOf("-coverlay")+1));
+        if (args.length == 0 || args1.contains("-gui")){
+            initGui();
+        }
+
+        if (args.length >= 3){
+            command(args);
+        }
+    }
+
+    public static void command(String[] args) {
+        List<String> args1 = Arrays.asList(args);
 
         if (args1.contains("-blockid"))
             blockId = Integer.parseInt(args1.get(args1.indexOf("-blockid")+1));
@@ -69,6 +89,9 @@ public class Main {
         if (args1.contains("-mirrorborder"))
             mirrorBorder = true;
 
+        if (args1.contains("-sizemultiplier"))
+            borderSizeMultiplier = Float.parseFloat(args[args1.indexOf("-sizemultiplier")+1]);
+
         String psep = "\\";
 
         if (args1.contains("-psep"))
@@ -80,10 +103,154 @@ public class Main {
         loadImages(args[0], args[1]);
         borderSize = Float.parseFloat(args[2]);
         export(args[3], args[4], psep);
+    }
 
-//        frame = new JFrame("Connected texture maker");
-//        frame.setPreferredSize(new Dimension(500, 500));
-//        panel = new JPanel();
+    public static void initGui(){
+        frame = new JFrame("ConnectedTextureMaker by Orbyfied");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(750, 250));
+        buttonPanel = new JPanel();
+        exportConfig = new JPanel();
+        basicInputs = new JPanel();
+        extraConfig1 = new JPanel();
+        extraConfig2 = new JPanel();
+        extraConfig3 = new JPanel();
+        panel = new JPanel();
+        try {
+            frame.setIconImage(ImageIO.read(Class.class.getResourceAsStream("/icon.png")));
+        } catch (Exception e){ e.printStackTrace(); }
+        frame.pack();
+        frame.setVisible(true);
+        panel.add(buttonPanel);
+        panel.add(exportConfig);
+        panel.add(basicInputs);
+        panel.add(extraConfig1);
+        panel.add(extraConfig2);
+        panel.add(extraConfig3);
+        frame.add(panel);
+
+        JLabel elabel1 = new JLabel("Output Dir.");
+        JTextField outputDir = new JTextField(10);
+        JButton browseOD = new JButton("Browse");
+        JLabel elabel2 = new JLabel("Texture Name");
+        JTextField textureName = new JTextField(5);
+
+        JButton export = new JButton("Export");
+
+        JLabel label1 = new JLabel("Source Image: ");
+        JTextField sourceImagePath = new JTextField(10);
+        JButton browseSI = new JButton("Browse");
+        JLabel label2 = new JLabel("Border Image: ");
+        JTextField borderOverlayPath = new JTextField(10);
+        JButton browseBO = new JButton("Browse");
+        JLabel label3 = new JLabel("Border Size: ");
+        JTextField borderSize = new JTextField(3);
+
+        JLabel xlabel1 = new JLabel("Corner Overlay: ");
+        JTextField cornerOverlayPath = new JTextField(10);
+        JButton browseCO = new JButton("Browse");
+        JLabel xlabel2 = new JLabel("Block ID: ");
+        JTextField blockIdF = new JTextField(2);
+        JLabel xlabel3 = new JLabel("Border Size In PX: ");
+        JTextField bspix = new JTextField(4);
+        JLabel xlabel4 = new JLabel("Mirror Border: ");
+        JCheckBox mirrorb = new JCheckBox();
+        JLabel xlabel5 = new JLabel("Test Border Size: ");
+        JCheckBox testb = new JCheckBox();
+        JLabel xlabel6 = new JLabel("Border Size In PX: ");
+        JTextField sizemul = new JTextField(4);
+
+        buttonPanel.add(export);
+        exportConfig.add(elabel1);
+        exportConfig.add(outputDir);
+        exportConfig.add(browseOD);
+        exportConfig.add(elabel2);
+        exportConfig.add(textureName);
+        basicInputs.add(label1);
+        basicInputs.add(sourceImagePath);
+        basicInputs.add(browseSI);
+        basicInputs.add(label2);
+        basicInputs.add(borderOverlayPath);
+        basicInputs.add(browseBO);
+        basicInputs.add(label3);
+        basicInputs.add(borderSize);
+        extraConfig1.add(xlabel1);
+        extraConfig1.add(cornerOverlayPath);
+        extraConfig1.add(browseCO);
+        extraConfig1.add(xlabel2);
+        extraConfig2.add(xlabel3);
+        extraConfig2.add(blockIdF);
+        extraConfig1.add(bspix);
+        extraConfig2.add(xlabel4);
+        extraConfig2.add(mirrorb);
+        extraConfig2.add(xlabel5);
+        extraConfig2.add(testb);
+        extraConfig2.add(xlabel6);
+        extraConfig2.add(sizemul);
+
+        export.addActionListener(e -> {
+            List<String> args = new ArrayList<>();
+            args.add(sourceImagePath.getText());
+            args.add(borderOverlayPath.getText());
+            args.add(borderSize.getText());
+            args.add(outputDir.getText());
+            args.add(textureName.getText());
+            if (!cornerOverlayPath.getText().equals("")){
+                args.add("-coverlay");
+                args.add(cornerOverlayPath.getText());
+            }
+            if (!blockIdF.getText().equals("")){
+                args.add("-blockid");
+                args.add(blockIdF.getText());
+            }
+            if (!bspix.getText().equals("")){
+                args.add("-pixsize");
+                args.add(bspix.getText());
+            }
+            if (!mirrorb.isSelected()){
+                args.add("-mirrorborder");
+            }
+            if (!testb.isSelected()){
+                args.add("-testsize");
+            }
+            if (!sizemul.getText().equals("")){
+                args.add("-sizemultiplier");
+                args.add(sizemul.getText());
+            }
+            command(args.toArray(new String[0]));
+        });
+
+        browseOD.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File("."));
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setAcceptAllFileFilterUsed(false);
+            chooser.showSaveDialog(frame);
+            outputDir.setText(chooser.getSelectedFile().getAbsolutePath());
+        });
+
+        browseSI.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File("."));
+            chooser.showSaveDialog(frame);
+            sourceImagePath.setText(chooser.getSelectedFile().getAbsolutePath());
+        });
+
+        browseCO.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File("."));
+            chooser.showSaveDialog(frame);
+            cornerOverlayPath.setText(chooser.getSelectedFile().getAbsolutePath());
+        });
+
+        browseBO.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File("."));
+            chooser.showSaveDialog(frame);
+            borderOverlayPath.setText(chooser.getSelectedFile().getAbsolutePath());
+        });
+
+        frame.pack();
     }
 
     public static int testBorderSizeM(int res){
@@ -187,12 +354,6 @@ public class Main {
         borderOverlayGraphics.drawImage(rotate(mirror, 180), w/2, h/2, null);
         borderOverlayGraphics.drawImage(rotate(flipV(mirror), 0), 0, h/2, null);
         borderOverlayGraphics.dispose();
-
-        try {
-            ImageIO.write(borderOverlay, "PNG", new File("debug.png"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private static BufferedImage rotate(BufferedImage image, float degrees)
@@ -283,6 +444,8 @@ public class Main {
 
         if (mirrorBorder)
             mirrorBorderImage();
+
+        borderSize = borderSize * borderSizeMultiplier;
 
         // replace <id> with the connection design id
         String filePathFormat = fpath + "/" + textureName + "/<id>.png";
