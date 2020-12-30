@@ -21,8 +21,8 @@ and type `gentextures` in it, there you will see how the arguments work.
     `<outputFolder>` = The path to the output folder; Actual output folder: (`<outputF>/<textureN>/`) (`/` = current folder)  
     `<textureName>` = The name of the texture. Used for the actual output folder and the `.properties` file.  
     `[-coverlay <image>]` = Enables the corners of the texture to have a different overlay than the borders.    
-    `[-blockid <id>]` = Automatically puts the block ID in the `.properties` file.
-    `[-pixsize <pix>]` = Set the border size on pixels. Original `<borderSize>` will be added to the result  
+    `[-blockid <id>]` = Automatically puts the block ID in the `.properties` file.  
+    `[-pixsize <pix>]` = Set the border size on pixels. Original `<borderSize>` will be added to the result   
     `[-testsize]` = Will automatically test for the border size in pixel. Border image has to be completely transparent on the inside of the border. Original `borderSize` will            be added to the result  
     `[-mirrorborder]` = Will mirror the border on all sides to make it look good.  
   - Basic Internal Workings  
