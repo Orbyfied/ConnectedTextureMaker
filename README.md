@@ -10,10 +10,13 @@ or change the path in `javapath.txt` to the absolute path of your JDK 13+'s `jav
 and type `gentextures` in it, there you will see how the arguments work.
 
 ## Usage
+ - GUI Syntax
+   `gentextures` (Without any parameters)
+   `gentextures -gui` (With one parameter)
  - Command Syntax
    (<> means required and [] means optional)
    
-   `gentextures <borderlessImageFile> <borderImageFile> <borderSize> <outputFolder> <textureName> [-coverlay <overlayImage>] [-blockid <id>]`
+   `gentextures <borderlessImageFile> <borderImageFile> <borderSize> <outputFolder> <textureName> [-coverlay <overlayImage>] [-blockid <id>] [-pixsize <pix>] [-testsize] [-mirrorborder]`
     
     `<borderlessImageFile>` = The path to the image file without borders. (Source Image)  
     `<borderImageFile>` = The path to the border image file that will overlay the source image on the border/corner parts.  
