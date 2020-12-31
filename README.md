@@ -26,11 +26,12 @@ and type `gentextures` in it, there you will see how the arguments work.
     `[-coverlay <image>]` = Enables the corners of the texture to have a different overlay than the borders.    
     `[-blockid <id>]` = Automatically puts the block ID in the `.properties` file.  
     `[-pixsize <pix>]` = Set the border size on pixels. Original `<borderSize>` will be added to the result   
-    `[-testsize]` = Will automatically test for the border size in pixel. Border image has to be completely transparent on the inside of the border. Original `borderSize` will            be added to the result  
+    `[-testsize]` = Will automatically test for the border size in pixels. Border image has to be completely transparent on the inside of the border. Original `borderSize` will            be added to the result.    
     `[-mirrorborder]` = Will mirror the border on all sides to make it look good.  
   - Basic Internal Workings  
     `Border size in pixels` : Element Size * (Resolution / 16) * Border Size  
-    `Actual output directory` : OutputFolder/TextureName  
+    `Actual output directory` : OutputFolder/TextureName    
+    `How to revert pixels to floating-point border size` : Border Size = Pixels / (Resolution / 16f) + Border Size;
     `Dependencies required` : JDK 13+  
 
 ## Me
