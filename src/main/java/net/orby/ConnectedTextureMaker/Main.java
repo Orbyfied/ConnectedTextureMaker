@@ -3,6 +3,7 @@ package net.orby.ConnectedTextureMaker;
 import javax.imageio.ImageIO;
 import javax.management.timer.TimerMBean;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.CellEditorListener;
 import javax.swing.plaf.SplitPaneUI;
 import java.awt.*;
@@ -40,7 +41,6 @@ public class Main {
 
     public static JFrame frame;
     public static JPanel panel;
-    public static JPanel buttonPanel;
     public static JPanel exportConfig;
     public static JPanel basicInputs;
     public static JPanel extraConfig1;
@@ -106,22 +106,23 @@ public class Main {
     }
 
     public static void initGui(){
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) { }
         frame = new JFrame("ConnectedTextureMaker by Orbyfied");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(750, 250));
-        buttonPanel = new JPanel();
+        frame.setPreferredSize(new Dimension(750, 200));
         exportConfig = new JPanel();
         basicInputs = new JPanel();
         extraConfig1 = new JPanel();
         extraConfig2 = new JPanel();
         extraConfig3 = new JPanel();
         panel = new JPanel();
-        try {
-            frame.setIconImage(ImageIO.read(Class.class.getResourceAsStream("/icon.png")));
-        } catch (Exception e){ e.printStackTrace(); }
+//        try {
+//            frame.setIconImage(ImageIO.read(Class.class.getResourceAsStream("icon.png")));
+//        } catch (Exception e){ e.printStackTrace(); }
         frame.pack();
         frame.setVisible(true);
-        panel.add(buttonPanel);
         panel.add(exportConfig);
         panel.add(basicInputs);
         panel.add(extraConfig1);
@@ -157,10 +158,10 @@ public class Main {
         JCheckBox mirrorb = new JCheckBox();
         JLabel xlabel5 = new JLabel("Test Border Size: ");
         JCheckBox testb = new JCheckBox();
-        JLabel xlabel6 = new JLabel("Border Size In PX: ");
+        JLabel xlabel6 = new JLabel("Size Multiplier: ");
         JTextField sizemul = new JTextField(4);
 
-        buttonPanel.add(export);
+        exportConfig.add(export);
         exportConfig.add(elabel1);
         exportConfig.add(outputDir);
         exportConfig.add(browseOD);
@@ -195,28 +196,30 @@ public class Main {
             args.add(borderSize.getText());
             args.add(outputDir.getText());
             args.add(textureName.getText());
-            if (!cornerOverlayPath.getText().equals("")){
+            if (!cornerOverlayPath.getText().isEmpty()){
                 args.add("-coverlay");
                 args.add(cornerOverlayPath.getText());
             }
-            if (!blockIdF.getText().equals("")){
+            if (!blockIdF.getText().isBlank()){
                 args.add("-blockid");
                 args.add(blockIdF.getText());
             }
-            if (!bspix.getText().equals("")){
+            if (!bspix.getText().isBlank()){
+                System.out.println("\""+bspix.getText()+"\"");
                 args.add("-pixsize");
                 args.add(bspix.getText());
             }
-            if (!mirrorb.isSelected()){
+            if (mirrorb.isSelected()){
                 args.add("-mirrorborder");
             }
-            if (!testb.isSelected()){
+            if (testb.isSelected()){
                 args.add("-testsize");
             }
-            if (!sizemul.getText().equals("")){
+            if (!sizemul.getText().isBlank()){
                 args.add("-sizemultiplier");
                 args.add(sizemul.getText());
             }
+            System.out.println(args);
             command(args.toArray(new String[0]));
         });
 
@@ -238,14 +241,20 @@ public class Main {
 
         browseCO.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
-            chooser.setCurrentDirectory(new File("."));
+            if (sourceImagePath.getText().isEmpty())
+                chooser.setCurrentDirectory(new File("."));
+            else
+                chooser.setCurrentDirectory(new File(new File(sourceImagePath.getText()).getParent()));
             chooser.showSaveDialog(frame);
             cornerOverlayPath.setText(chooser.getSelectedFile().getAbsolutePath());
         });
 
         browseBO.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
-            chooser.setCurrentDirectory(new File("."));
+            if (sourceImagePath.getText().isEmpty())
+                chooser.setCurrentDirectory(new File("."));
+            else
+                chooser.setCurrentDirectory(new File(new File(sourceImagePath.getText()).getParent()));
             chooser.showSaveDialog(frame);
             borderOverlayPath.setText(chooser.getSelectedFile().getAbsolutePath());
         });
