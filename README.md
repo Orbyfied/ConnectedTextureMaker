@@ -36,3 +36,21 @@ and type `gentextures` in it, there you will see how the arguments work.
 ## Me
 ***YouTube***: https://www.youtube.com/channel/UC341yIu-j9Fs9iS5F3-OeYg?view_as=subscriber
 Thats kind of it...
+
+## Changelog  
+### 1.0 - Initial Release  
+   - Source Image, Border Image & Border Size  
+
+### 1.1 - Extra Customization & Bug fixes  
+   - Added the `<texture>.properties` generator.  
+   - Added the corner overlay feature.  
+   - Added the automatic block ID feature.  
+   - Fixed some bugs regarding the math that goes into the elements.  
+
+### 1.2 - The big lazyness update!  
+   - Added the `pixsize` feature, to make sure that you don't have to do the math.  
+   - Added the `testsize` feature, to make sure that you don't have to look the border size up yourself.  
+   - Added the `mirrorborder` feature, to make sure that you don't have to manually make the borders look nice and symmetric.
+
+### 2.0 - GUI!
+   - Added a very basic, not so stylish, but working GUI!
