@@ -5,9 +5,12 @@ An automatic Minecraft CTM (Connected Textures Mod) / Optifine connected texture
 ## Installation
 First make sure you have JDK 13 or higher, as the program is written in it. 
 Now download the `built` folder, this has the pre-built JAR
-file, two types of shell scripts (`.bat` for Windows and `.sh` for Mac and Linux). If a JNI error occurs or if it tells you that `java` was not found, check your JDK installation
-or change the path in `javapath.txt` to the absolute path of your JDK 13+'s `java.exe`. Then open a terminal or some shell, go to the downloaded `built` folder 
-and type `gentextures` in it, there you will see how the arguments work.
+file, two types of shell scripts (`.bat` for Windows and `.sh` for Mac and Linux). 
+Then open a terminal or some shell, go to the downloaded `built` folder 
+and type `gentextures` in it, along with the parameters (See the section down below).
+To open a GUI you can also just double click on the `gentextures` file.
+If a JNI error occurs or if it tells you that `java` was not found, check your JDK installation
+or change the path in `javapath.txt` to the absolute path of your JDK 13+'s `java.exe`. 
 
 ## Usage
  - GUI Syntax
@@ -35,7 +38,7 @@ and type `gentextures` in it, there you will see how the arguments work.
     `Dependencies required` : JDK 13+  
 
 ## Me
-***YouTube***: https://www.youtube.com/channel/UC341yIu-j9Fs9iS5F3-OeYg?view_as=subscriber
+***YouTube***: https://www.youtube.com/channel/UC341yIu-j9Fs9iS5F3-OeYg?view_as=subscriber  
 Thats kind of it...
 
 ## Changelog  
