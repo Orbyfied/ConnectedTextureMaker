@@ -29,8 +29,8 @@ public class Main {
     public static BufferedImage cornerOverlay;
     public static Graphics2D borderOverlayGraphics;
     public static Graphics2D sourceImageGraphics;
-    public static BufferedImage cornerOverlayGraphics;
-    public static int borderPixelSize = -1;
+    public static Graphics2D cornerOverlayGraphics;
+    public static int userBorderSizeInPixels = -1;
     public static float borderSize = 1;
     public static int blockId = 0;
     public static boolean debug = false;
@@ -38,6 +38,7 @@ public class Main {
     public static boolean mirrorBorder = false;
     public static int borderSizePixel;
     public static float borderSizeMultiplier = 1;
+    public static String psep = "\\";
 
     public static JFrame frame;
     public static JPanel panel;
@@ -62,7 +63,10 @@ public class Main {
             return;
         }
 
-        if (args.length == 0 || args1.contains("-gui")){
+        if (args1.contains("-psep"))
+            psep = args1.get(args1.indexOf("-psep")+1);
+
+        if (args.length < 2 || args1.contains("-gui")){
             initGui();
         }
 
@@ -81,7 +85,7 @@ public class Main {
             debug = true;
 
         if (args1.contains("-pixsize"))
-            borderPixelSize = Integer.parseInt(args[args1.indexOf("-pixsize")+1]);
+            userBorderSizeInPixels = Integer.parseInt(args[args1.indexOf("-pixsize")+1]);
 
         if (args1.contains("-testsize"))
             testBorderPixels = true;
@@ -103,6 +107,23 @@ public class Main {
         loadImages(args[0], args[1]);
         borderSize = Float.parseFloat(args[2]);
         export(args[3], args[4], psep);
+    }
+
+    public static void reset(){
+         borderOverlay = null;
+         sourceImage = null;
+         cornerOverlay = null;
+         sourceImageGraphics = null;
+         borderOverlayGraphics = null;
+         cornerOverlayGraphics = null;
+         borderSize = 1f;
+         userBorderSizeInPixels = -1;
+         blockId = 0;
+         debug = false;
+         testBorderPixels = false;
+         mirrorBorder = false;
+         borderSizeMultiplier = 1;
+         psep = "\\";
     }
 
     public static void initGui(){
@@ -179,9 +200,9 @@ public class Main {
         extraConfig1.add(cornerOverlayPath);
         extraConfig1.add(browseCO);
         extraConfig1.add(xlabel2);
+        extraConfig1.add(blockIdF);
         extraConfig2.add(xlabel3);
-        extraConfig2.add(blockIdF);
-        extraConfig1.add(bspix);
+        extraConfig2.add(bspix);
         extraConfig2.add(xlabel4);
         extraConfig2.add(mirrorb);
         extraConfig2.add(xlabel5);
@@ -190,12 +211,18 @@ public class Main {
         extraConfig2.add(sizemul);
 
         export.addActionListener(e -> {
+            reset();
             List<String> args = new ArrayList<>();
             args.add(sourceImagePath.getText());
             args.add(borderOverlayPath.getText());
             args.add(borderSize.getText());
             args.add(outputDir.getText());
             args.add(textureName.getText());
+            if (!psep.equals("\\")){
+                args.add("-psep");
+                args.add(psep);
+            }
+
             if (!cornerOverlayPath.getText().isEmpty()){
                 args.add("-coverlay");
                 args.add(cornerOverlayPath.getText());
@@ -263,6 +290,7 @@ public class Main {
     }
 
     public static int testBorderSizeM(int res){
+        System.out.println("detecting border size...");
         int size = 0;
         int[] avm = new int[4];
 
@@ -317,6 +345,7 @@ public class Main {
         for (int a : avm)
             size += a;
         size = (int) Math.floor(size / 4f);
+        System.out.println("size detected: "+size);
         return size;
     }
 
@@ -344,11 +373,11 @@ public class Main {
         int w = sourceImage.getWidth();
         int h = sourceImage.getHeight();
 
+        System.out.println("mirroring border image...");
         BufferedImage mirror = new BufferedImage(w/2, h/2, BufferedImage.TYPE_INT_ARGB);
         Graphics2D mg = mirror.createGraphics();
         mg.drawImage(borderOverlay, 0, 0, null);
         mg.dispose();
-
         for (int x = 0; x <= borderSizePixel; x++){
             for (int y = 0; y < h/2; y++){
                 int y1 = y;
@@ -446,15 +475,17 @@ public class Main {
         if (testBorderPixels)
             borderSize = fromPixelAmt(testBorderSizeM(sr), sr) + borderSize;
 
-        if (borderPixelSize != -1)
-            borderSize = fromPixelAmt(borderPixelSize, sr) + borderSize;
+        if (userBorderSizeInPixels != -1)
+            borderSize = fromPixelAmt(userBorderSizeInPixels, sr) + borderSize;
 
         borderSizePixel = (int) (borderSize * sr / 16);
 
+        borderSize = borderSize * borderSizeMultiplier;
+
+        System.out.println("border size: "+borderSize);
+
         if (mirrorBorder)
             mirrorBorderImage();
-
-        borderSize = borderSize * borderSizeMultiplier;
 
         // replace <id> with the connection design id
         String filePathFormat = fpath + "/" + textureName + "/<id>.png";
