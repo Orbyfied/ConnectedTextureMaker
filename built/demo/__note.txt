@@ -1,2 +1,2 @@
-the generated textures look trash because the input textures are also trash cuz i made them by hand in a minute :/
-take some good source and borderoverlay images and you are good.
+the border image doesnt really link correctly due to corners.
+[ source image from Telly's 60k pack ]
