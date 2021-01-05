@@ -88,11 +88,11 @@ public class Template {
         return parse(template[index]);
     }
 
-    public static List<String> parse(String index){
-        if (index.contains(" "))
-            return Arrays.asList(index.split(" "));
-        else if (!index.equals(""))
-            return Collections.singletonList(index);
+    public static List<String> parse(String str){
+        if (str.contains(" "))
+            return Arrays.asList(str.split(" "));
+        else if (!str.equals(""))
+            return Collections.singletonList(str);
         else
             return new ArrayList<>();
     }
