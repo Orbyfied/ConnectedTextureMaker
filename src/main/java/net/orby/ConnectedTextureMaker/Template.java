@@ -57,7 +57,7 @@ public class Template {
             "tlc blc", // 23
             "l r", // 24
             "l", // 25
-            "", // 26 F U L L     B L O C K
+            "", // 26    F U L L    B L O C K
             "r", // 27
             "l trc", // 28
             "t brc", // 29
@@ -82,7 +82,7 @@ public class Template {
 
     public static List<Integer> elementTypes;
     public static List<String> elements;
-    private static List<String> borderQualifiers = Arrays.asList("b", "l", "r", "t");
+    public static List<String> borderQualifiers = Arrays.asList("b", "l", "r", "t");
 
     public static List<String> parse(int index){
         return parse(template[index]);
@@ -95,13 +95,6 @@ public class Template {
             return Collections.singletonList(index);
         else
             return new ArrayList<>();
-    }
-
-    public static Integer[] processSize(Integer[] ints, int sizeadd, int resolution){
-        Integer[] integers = new Integer[2];
-        integers[0] = ints[0] * resolution/14 + sizeadd;
-        integers[1] = ints[1] * resolution/14 + sizeadd;
-        return integers;
     }
 
     public static List<Integer[]> parseCoords(List<String> strings){
@@ -198,16 +191,16 @@ public class Template {
 
     public static Integer[] processRect(Integer[] integers, String element, float stretchx, float stretchy, int res){
         Integer[] ints = integers.clone();
-	res = res/16;
+        res = res / 16;
         switch (element){
             case "l":
-		ints[3] = 16*res;
-		break;
+                ints[3] = 16*res;
+                break;
             case "r":
                 ints[3] = -16*res;
                 break;
             case "t":
-		ints[2] = 16*res;
+                ints[2] = 16*res;
                 break;
             case "b":
                 ints[2] = -16*res;
@@ -233,8 +226,8 @@ public class Template {
             c = new Integer[4];
             c[0] = (int) Math.floor((c1[0] * r)); // X1
             c[1] = (int) Math.floor((c1[1] * r)); // Y1
-            c[2] = (int) Math.floor(((c1[2]) * r * stretchx)); // sizeX
-            c[3] = (int) Math.floor(((c1[3]) * r * stretchy)); // sizeY
+            c[2] = (int) Math.floor((c1[2] * r * stretchx)); // sizeX
+            c[3] = (int) Math.floor((c1[3] * r * stretchy)); // sizeY
             list.add(processRect(c, elements.get(e), stretchx, stretchy, resolution));
             e++;
         }
